@@ -1,6 +1,7 @@
 ---
 layout: post_page
 title: Kannel with The Huawei E160
+comments: true
 ---
 
 I love [Kannel](http://www.kannel.org). Everybody who's used It, loves It. And why wouldn't you? It's libre, it's open and tt's powerful. However, Kannel is hard to configure. Especially if Its your first time using It (let alone it being your first time using Linux). There are just too many variables you can tweak.
