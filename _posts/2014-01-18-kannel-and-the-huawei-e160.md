@@ -1,6 +1,6 @@
 ---
 layout: post_page
-title: Kannel with The Huawei E160
+title: Kannel and The Huawei E160
 comments: true
 ---
 
