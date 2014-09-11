@@ -25,7 +25,7 @@ One thing, however, that I had to do was to make sure the app was as modular as 
 
 When everything was working fine over HTTP and I was sure it was time to implement message transmission over SMS, we had to choose Server Side Software for handling SMSs. My boss chose [Kannel](http://www.kannel.org). I wouldn't have chosen anything else. Kannel is free and open. Honestly, I would not recommend Ozeki to anyone. Kannel is a bit hard to configure but once you get things running it is bliss.
 
-Here's [another post](http://jasonrogena.github.io/2014/01/18/kannel-and-the-huawei-e160.html) I wrote on configuring Kannel.
+Here's [another post](https://jasonrogena.github.io/2014/01/18/kannel-and-the-huawei-e160.html) I wrote on configuring Kannel.
 
 We have two servers in the office, one has all the PHP scripts that interact with the Android app and the other runs Kannel. To make things less complicated I'll call the server running the PHP scripts Azizi and the one running Kannel KServer. KServer has a Huawei E160 HSPA modem plugged into it. Not the best modem but it works. The KServer acts like a proxy, re-routing SMSs from the Andriod app to Azizi and routing responses from Azizi to the Android app via SMS.
 
