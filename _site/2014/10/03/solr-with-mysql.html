@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+      <script>
+         var host = "jasonrogena.github.io";
+         if (window.location.host == host && window.location.protocol != "https:") {
+            window.location.protocol = "https:";
+         }
+      </script>
+		<title> Solr with MySQL </title>
+		<!-- For responsive site
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<link rel="author" href="/humans.txt">
+		<meta name="description" content="Description Goes Here">
+		<link rel="stylesheet" href="/css/style.css">
+		<!--[if IE 7]>
+			<html class="ie7"> 
+			<link rel="stylesheet" type="text/css" href="/css/font-awesome-ie7.min.css">
+		<![endif]-->
+		<!--[if IE 8]><html class="ie8"> <![endif]-->		
+	    <!--[if lt IE 9]>
+	      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	    <![endif]-->
+
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
+		<link rel="shortcut icon" href="ico/favicon.png">	    
+	</head>
+	<body>
+	<!-- Header
+	    ================================================== -->
+	<header>
+
+	</header>
+
+	<div class="top-strip"></div>
+<main class="content">
+    <section class="container">
+    	<div class="row-fluid">
+    		<article class="home-icon">
+				<a href="/">
+					<i class="icon-home"></i> 
+				</a>
+			</article>
+			<article class="post">
+				<h5>03 October 2014</h5>
+				<h2 class="content">Solr with MySQL</h2>
+				<section>
+					<p>I work in a Research Institute. My job there involves making Software Systems that work with biological sample data. About six months ago, we started developing systems that involved doing high level searches on the biological sample data we have stored in numerous MySQL databases. These high level searches were being done directly on MySQL with the assistance of wildcards and a bit of cleaning. To be honest, the searches weren’t really working like we wanted them to. Some were super slow, others didn’t return hits (even the more obvious ones). The cracks really started to show when the size of the datasets on MySQL databases started growing. Something had to be done.</p>
+
+<p>In comes <a href="lucene.apache.org/solr">Solr</a>… Well Solr really wasn’t the first thing we tried. I played with <a href="www.elasticsearch.org">Elasticsearch</a> and I loved it:</p>
+
+<ol>
+  <li>Elasticsearch is dead simple to deploy. It took me about an hour to come up with something tangible enough to show to my boss.</li>
+  <li>It has great plugins. For instance, <a href="http://www.elasticsearch.org/overview/kibana">Kibana</a> for visualizations.</li>
+  <li>Elasticsearch is easily scalable over multiple hosts. Scaling was as simple as deploying Elasticsearch in multiple hosts on the same subnet. The hosts automatically discovered each other (what could possibly go wrong).</li>
+  <li>Indexing MySQL data is not hard. Well, importing MySQL data might not have been as easy as deploying the Elasticsearch instance but it was close enough.</li>
+</ol>
+
+<p>I had one major problem with Elasticsearch though. Updating the Elasticsearch index when using MySQL as the source seemed like one big hack. I had to create a bash script that was being called by crontab every 5 minutes or so. The bash scripts first checked for the number of records in the Elasticsearch index, then it checked for the number of rows in an indexed MySQL database and finally, it fetched any new MySQL rows. There were simply too many moving parts. Crontab, files in tmp storing timestamps, updating rivers and streams in <a href="https://github.com/jprante/elasticsearch-river-jdbc">River JDBC</a>…. It simply wasn’t working for me.</p>
+
+<p>So a few weeks ago I decided to switch to Solr and I must say I’m loving it so far:</p>
+
+<ol>
+  <li>No need to install third-party libraries to make it work with MySQL.</li>
+  <li>Extremely powerful when it comes to defining the structure of the MySQL datasets.</li>
+  <li>Somewhat easy to deploy.</li>
+</ol>
+
+<p>However, be warned. Solr is not as easy to configure as Elasticsearch. It might take you a day to wrap your head around how it works.</p>
+
+<blockquote>
+  <p><strong>Note:</strong>
+I will not explain how to install Solr. Mainly because <a href="http://mjanja.co.ke">somebody else</a> did it for me. There are numerouse posts out there you can use for this. <a href="https://www.digitalocean.com/community/tutorials/how-to-install-solr-on-ubuntu-14-04">Here’s</a> one for example. I will also not go through step-by-step configuration of Solr with MySQL. Solr’s <a href="http://wiki.apache.org/solr/DataImportHandler">official wiki page</a> for the DataImportHandler is pretty comprehensive on this topic. I will mainly consentate on the odd behaviours in Solr that made configuration a bit time consuming.</p>
+</blockquote>
+
+<h3 id="my-set-up">My Set Up</h3>
+
+<p>My setup looks like this:</p>
+
+<ul>
+  <li>The server runs Ubuntu 14.04</li>
+  <li>I’m using Tomcat7 as the servlet container</li>
+  <li>Solr is installed in /usr/share/tomcat7/solr. I’ll be calling this <strong>SOLR_HOME</strong></li>
+  <li>I have a Solr core called samples in /usr/share/tomcat7/solr/cores/samples</li>
+  <li>The samples core’s config directory is /usr/share/tomcat7/solr/cores/samples/config</li>
+</ul>
+
+<p>After installation and configuration, my Solr core home had the following files:</p>
+
+<ul>
+  <li>solrconfig.xml. This file is the main configuration file for you core</li>
+  <li>schema.xml. This file basically handles datatypes and associates fields to datatypes</li>
+  <li>data-config.xml. This file contains the MySQL queries responsible for importing data from MySQL into Solr.</li>
+</ul>
+
+<h4 id="the-mysql-connector">1. The MySQL Connector</h4>
+
+<p>Java needs the MySQL <a href="http://dev.mysql.com/downloads/connector/j/5.1.html">Connector Library</a> for it to connect to MySQL. There are two ways you can import the Connector Library into solr.</p>
+
+<ol>
+  <li>Dumping the lib into Tomcat’s common class loader directory</li>
+  <li>Manually importing the library in your solrconfig.xml file</li>
+</ol>
+
+<p>If you plan on having more than one core that will import data from MySQL, I’d prefer you use the first method. Manually importing the library in each of your cores might lead to Java throwing <a href="http://www.integratingstuff.com/2011/07/24/understanding-and-avoiding-the-java-permgen-space-error/">PermGen Space Errors</a>.</p>
+
+<h4 id="importing-the-necessary-solr-libs">2. Importing the Necessary Solr Libs</h4>
+
+<p>Solr will need the dataimporthandler library for it to be able to import data from MySQL. I created a directory called <strong>dist</strong> in my SOLR_HOME, copied the solr-dataimporthandler.jar and solr-dataimporthandler-extras.jar from Solr example provided in the installation zip/tarball file into this <strong>dist</strong> directory then pointed my solrconfig.xml files to these libraries:</p>
+
+<pre><code>&lt;lib dir="../../dist/" regex="solr-dataimporthandler-\d.*\.jar" /&gt;
+&lt;lib dir="../../dist/" regex="solr-dataimporthandler-extras-\d.*\.jar" /&gt;
+</code></pre>
+
+<p>To be safe, I added the lines after the last lib tag in the file.</p>
+
+<h4 id="mysql-authentication-and-datasources">3. MySQL Authentication and Datasources</h4>
+
+<p>The <a href="https://wiki.apache.org/solr/DataImportHandler">dataimporthandler wiki</a> recommends you define your MySQL datasources in your data-config.xml file. However, this did not work for me. Solr was not able to read the data-config.xml file whenever I did this. I therefore had to move the datasources to the solrconfig.xml file. Here’s how the DataImportHandler looks in my solrconfig.xml file:</p>
+
+<pre><code>&lt;requestHandler name="/handlers" class="org.apache.solr.handler.dataimport.DataImportHaldler"&gt;&lt;!-- make sure the / is there in the name otherwise this wont work --&gt;
+  &lt;lst name="defaults"&gt;
+     &lt;str name="config"&gt;data-config.xml&lt;/str&gt;&lt;!-- here is where you specify where the schema is  --&gt;
+     &lt;lst name="datasource"&gt;
+        &lt;str name="name"&gt;data_source_0&lt;/str&gt;
+        &lt;str name="driver"&gt;com.mysql.jdbc.Driver&lt;/str&gt;
+        &lt;str name="url"&gt;jdbc:mysql://db_host0/db0?zeroDateTimeBehavior=convertToNull&lt;/str&gt;
+        &lt;str name="user"&gt;user0&lt;/str&gt;
+        &lt;str name="password"&gt;pw0&lt;/str&gt;
+     &lt;/lst&gt;
+     &lt;lst name="datasource"&gt;
+        &lt;str name="name"&gt;data_source_1&lt;/str&gt;
+        &lt;str name="driver"&gt;com.mysql.jdbc.Driver&lt;/str&gt;
+        &lt;str naqme="url"&gt;jdbc:mysql://db_host1/db1?zeroDateTimeBehavior=convertToNull&lt;/str&gt;
+        &lt;str name="user"&gt;user1&lt;/str&gt;
+        &lt;str name="password"&gt;pass1&lt;/str&gt;
+     &lt;/lst&gt;
+  &lt;/lst&gt;
+&lt;/requestHandler&gt;
+</code></pre>
+
+<p>You’ll also want to add the <strong>zeroDateTimeBehavior</strong> variable in your MySQL connection URL to cater for MySQL <strong>datetime</strong> columns that have the ‘00:00:0000’ value. The Java datatype is not able to handle such a value.</p>
+
+<h4 id="my-data-configxml-file">4. My data-config.xml File</h4>
+
+<p>Here’s a simplified version of my data-config.xml file:</p>
+
+<pre><code>&lt;dataConfig&gt;
+ &lt;document name='samples'&gt;
+   &lt;entity name="sample"
+           dataSource="data_source_0"
+           pk="sample_id"
+           query="select a.id as sample_id, a.name, a.box_id, b.name as loc
+                 from samples as a
+                 left join locations as b on a.loc_id = b.id"
+           preImportDeleteQuery="*:*"&gt;
+     &lt;field column="SAMPLE_ID" name="sample_id" /&gt;
+     &lt;field column="NAME" name="sample_name" /&gt;
+     &lt;field column="LOC" name="sample_loc" /&gt;
+     &lt;field column="BOX_ID" name="box_id" /&gt;
+     &lt;entity name="storage_box"
+             dataSource="data_source_1"
+             pk="box_id"
+             onError="continue"
+             query="select id as box_id, a.name as box_name
+                   from boxes
+                   where id = '${sample.box_id}'"
+             preImportDeleteQuery="*:*"&gt;
+       &lt;field column="NAME" name="box_name" /&gt;
+     &lt;/entity&gt;
+   &lt;/entity&gt;
+ &lt;/document&gt;
+&lt;dataConfig&gt;
+</code></pre>
+
+<p>Pay special attention on how joined the root entity (sample) with it’s child entity (storage_box). I recommend adding the onError attribute to your child entity. Refer to the dataimport WiKi for possible value of this entity. Make sure your parent entity’s primary key is surrounded in quotes in the child entity’s MySQL query. Do this even if the primary key is an integer. I did this as a form of a failsafe in cases where the primary key is empty.</p>
+
+<p>Also note that I used joins instead of entities whever I could. Using sub-entities would have improve the performance during importation and indexing. On the other hand, it’s simpler to use joins.</p>
+
+<p>Solr was unable to import the data-config.xml file whenever I put comments in it. This is a bit odd, and maybe I’m the one who doesn’t know how to comment on xml. My data-config.xml file is therefore free of comments. </p>
+
+<p>Another issue you should watch out for is Solr will not populate fields that have names that confilct with words reserved by Solr. In my case, Solr was unable to import data for fields named: <strong>‘feature’</strong> and <strong>‘size’</strong>. You should therefore check which of your fields are blank after importing data from MySQL. </p>
+
+<p>It sucks Solr in most cases keeps quiet whenever it’s unable to import the data-config.xml file. One way, however, you can tell if your data-config.xml file has an issue is by checking if you can see the root entity your core’s Dataimport page:</p>
+
+<p><img src="/assets/images/2014-10-03-solr-with-mysql_1.png" alt="image showing loaded entities from a successfully imported data-config.xml file" /></p>
+
+<h4 id="defining-my-datatypes">5. Defining My Datatypes</h4>
+
+<p>The last major thing I needed to do was to define my datatypes in the schema.xml file. Note that the default schema.xml has most if not all the datatypes you’ll need. Here are the lines I needed to add to make it work with the data-config.xml file above:</p>
+
+<pre><code>&lt;uniqueKey&gt;sample_id&lt;/uniqueKey&gt;
+&lt;field name="sample_id" type="string" indexed="true" required="true" stored="true" /&gt;
+&lt;field name="sample_name" type="text_general" indexed="true" stored="true" default="NULL" /&gt;
+&lt;field name="sample_loc" type="text_general" indexed="true" stored="true" default="" /&gt;
+&lt;field name="box_id" type="string" indexed="true" stored="true" default="" /&gt;
+&lt;field name="box_name" type="text_general" indexed="true" stored="true" default="" /&gt;
+</code></pre>
+
+<p>To be on the safe side, you might want to initialize your integer fields with the <strong>‘string’</strong> datatype. This is because Solr will not be able to import null values in fields that are of type <strong>‘int’</strong>.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>Solr has some undocumented weird behaviours when connected to MySQL. Maybe someone working on Solr will someday read this and clarify on these. However, for now, it’s important for me to iterate that <strong>if you have a relational database that is normalized, you’re better off going with Solr</strong>. I will, in another post, blog on the optimizations I did (especially in the schema.xml file) to make Solr work well in my setup. Feel free to comment on any mistakes (misinformation or grammatical) that I might have made in this post.</p>
+
+					<hr>
+				</section>
+            <section>
+               
+                      <div id="disqus_thread"></div>
+                         <script type="text/javascript">
+                             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+                             var disqus_shortname = 'jasonrogena'; // required: replace example with your forum shortname
+
+                             /* * * DON'T EDIT BELOW THIS LINE * * */
+                             (function() {
+                                 var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                 dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                                 (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                             })();
+                         </script>
+                         <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                         <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+               
+            </section>
+				<section style="font-weight:bold; margin-bottom: 2em;">
+					 
+							<a rel="prev" class="a-hover"href="/2014/01/18/kannel-and-the-huawei-e160.html"><i class="icon-double-angle-left"></i> Kannel and The Huawei E160</a>
+						
+						
+				</section>
+			</article>
+		</div>
+	</section>
+</main>
+
+
+	<footer>
+		<div class="container">
+			Jason Rogena. All Wrongs Reserved
+		</div>
+	</footer>
+
+	<!-- Footer
+	    ================================================== -->
+
+	<!-- Javascripts 
+	    ================================================= -->
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/custom.js"></script>
+
+    <!-- Analytics
+    ================================================== -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-54526143-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+	</body>
+</html>
