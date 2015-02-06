@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/2014/10/13/simple-localization-on-android.html</loc>
+    <loc>https://jasonrogena.github.io/2014/10/13/simple-localization-on-android.html</loc>
     <lastmod>2014-10-13T00:00:00+03:00</lastmod>
   </url>
   <url>
-    <loc>/2014/10/03/solr-with-mysql.html</loc>
+    <loc>https://jasonrogena.github.io/2014/10/03/solr-with-mysql.html</loc>
     <lastmod>2014-10-03T00:00:00+03:00</lastmod>
   </url>
   <url>
-    <loc>/2014/01/18/kannel-and-the-huawei-e160.html</loc>
+    <loc>https://jasonrogena.github.io/2014/01/18/kannel-and-the-huawei-e160.html</loc>
     <lastmod>2014-01-18T00:00:00+03:00</lastmod>
   </url>
   <url>
-    <loc>/2013/12/22/sending-app-data-over-sms-on-android.html</loc>
+    <loc>https://jasonrogena.github.io/2013/12/22/sending-app-data-over-sms-on-android.html</loc>
     <lastmod>2013-12-22T00:00:00+03:00</lastmod>
   </url>
   <url>
-    <loc>/</loc>
-    <lastmod>2015-02-06T17:12:15+03:00</lastmod>
+    <loc>https://jasonrogena.github.io/</loc>
+    <lastmod>2015-02-07T00:41:57+03:00</lastmod>
   </url>
 </urlset>
