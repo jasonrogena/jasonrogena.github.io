@@ -26,10 +26,13 @@ I collected some stats on how the algorithm performed on my [LG Nexus 5](https:/
 
 You are better off asking around which route to take than waiting 7 minutes for phone to calculate the best path. The performace was terrible, expecially in low end devices. I figured moving the path selection code to a Jersey web service running in a Digital Ocean VPS. My idea was to run the path centrally as the web service with the Android app acting only as a frontend. Sometimes all you need to do is throw a faster CPU and more RAM at your problem. The specifications for the VPS are:
 
-    OS: Ubuntu 14.04 x64
-    CPU: Intel(R) Xeon(R) CPU E5-2630L v2 @ 2.40GHz
-    Cores: 1
-    RAM: 512Mb
+> OS: Ubuntu 14.04 x64
+>
+> CPU: Intel(R) Xeon(R) CPU E5-2630L v2 @ 2.40GHz
+>
+> Cores: 1
+>
+> RAM: 512Mb
 
 Porting the code was very easy. I was getting identical results from the path selection code running on the Android app and the web service, although much faster in the web service--twenty times faster actually.
 
