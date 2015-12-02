@@ -2,6 +2,7 @@
 layout: post_page
 title: Simple Localization on Android
 comments: true
+description: How to implement simple localisation on Android when dealing with non-ISO locales
 ---
 
 Localizing apps to languages that are officially supported in Android is a bit straightforward. However, for unsupported languages, it might be a bit tricky especially if there are special characters involved.

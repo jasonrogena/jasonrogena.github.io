@@ -2,6 +2,7 @@
 layout: post_page
 title: Sending App Data Over SMS on Android
 comments: true
+description: I explain a simple implementation of rolling back to sending data over SMS on Android when a data connection is not present
 ---
 
 For some time now I've been working on [an Android app](https://github.com/jasonrogena/ngombe_planner-android) that is going to be used by small scale farmers in East Africa. We expect that most of the farmers will not have an internet connection. Hell, most of them won't have android phones. But that's a story for another day. So, for a proof of concept, the app I'm making should roll back to sending data using SMS when no HTTP connection is available. Here some notes on how to do it:

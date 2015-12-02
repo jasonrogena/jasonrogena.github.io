@@ -2,6 +2,7 @@
 layout: post_page
 title: Matatus&#58; Route Planning Using Neo4J
 comments: true
+description: I compare the speed and reliability of the classic Dijkstra's algorithm implemented in my code and that implemented in Neo4J for getting best paths for public transit in Nairobi
 ---
 
 I have, for a year now, been trying to make an Opensource [matatu](https://en.wikipedia.org/wiki/Matatu) transit application on Android for Nairobi. I must say, it has not been easy. I made some bad decisions. Some that have lead to me barking on the provabial wrong tree. I will, in this blog post, expound on one of the mistakes I made, my initial reasoning behind making this 'silly' decision and why I was wrong.

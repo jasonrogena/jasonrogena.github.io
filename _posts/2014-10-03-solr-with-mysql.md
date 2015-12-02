@@ -2,6 +2,7 @@
 layout: post_page
 title: Solr with MySQL
 comments: true
+description: How to configure MySQL as a datasource in Solr 4.1
 ---
 
 I work in a Research Institute. My job there involves making Software Systems that work with biological sample data. About six months ago, we started developing systems that involved doing high level searches on the biological sample data we have stored in numerous MySQL databases. These high level searches were being done directly on MySQL with the assistance of wildcards and a bit of cleaning. To be honest, the searches weren't really working like we wanted them to. Some were super slow, others didn't return hits (even the more obvious ones). The cracks really started to show when the size of the datasets on MySQL databases started growing. Something had to be done.
@@ -67,7 +68,7 @@ To be safe, I added the lines after the last lib tag in the file.
 
 The [dataimporthandler wiki](https://wiki.apache.org/solr/DataImportHandler) recommends you define your MySQL datasources in your data-config.xml file. However, this did not work for me. Solr was not able to read the data-config.xml file whenever I did this. I therefore had to move the datasources to the solrconfig.xml file. Here's how the DataImportHandler looks in my solrconfig.xml file:
 
-    <requestHandler name="/handlers" class="org.apache.solr.handler.dataimport.DataImportHaldler"><!-- make sure the / is there in the name otherwise this wont work -->
+    <requestHandler name="/handlers" class="org.apache.solr.handler.dataimport.DataImportHandler"><!-- make sure the / is there in the name otherwise this wont work -->
       <lst name="defaults">
          <str name="config">data-config.xml</str><!-- here is where you specify where the schema is  -->
          <lst name="datasource">
