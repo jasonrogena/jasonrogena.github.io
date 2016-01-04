@@ -114,7 +114,7 @@ You can define more than one output plugin (you can probably also do this for so
 
 ### Conclusion
 
-I love the way the setup so far:
+I love the setup so far:
 
  - No processor hogging observed.
  - The Heka, InfluxDB, and Grafana services have been running continuously for a month now without farting or dying on me.
