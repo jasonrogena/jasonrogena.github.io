@@ -103,3 +103,5 @@ Copy your GPG public key into your clipboard:
     gpg2 --armor --export [your key ID] | pbcopy
 
 Go to your GitHub [key settings](https://github.com/settings/keys), click on 'New GPG Key', and paste whatever is in your clipboard into the text entry field. All commits and tags you've signed should now have a 'VERIFIED' sticker on GitHub 😀.
+
+A tamer version of this post has been published on [Ona's Blog](https://blog.ona.io/technology/2016/10/25/Signing-Git-Commits.html)
