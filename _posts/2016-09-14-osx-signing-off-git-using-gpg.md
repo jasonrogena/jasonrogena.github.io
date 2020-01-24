@@ -5,6 +5,8 @@ comments: true
 description: How to configure Git signing using GPG on OSX
 ---
 
+> I have removed the section on configuring git to auto-sign tags, since the configuration doesn't work. Thanks Hannes Van De Vreken for pointing that out!
+
 Signing Git commits using GPG isn't a requirement in most projects. It is however a nice to have feature, especially in cases where it is important for you to have your identity as the commiter verified. This prevents, for instance, an impersonator from going undetected when they submit a commit as you. It's in Ona's best interest to verify the identity of contributors linked to us in the numerous data collection projects we contribute code to, mainly to prevent this [totally plausible horror story](https://mikegerwitz.com/papers/git-horror-story) presented by Mike Gerwitz from happening.
 
 Here are instructions on how to set up GPG signing on OSX. Those of the 'Linux master race' should be able to easily follow.
@@ -44,10 +46,9 @@ Test if Git can use the private key by amending your last commit in a project:
 
 The *-s* switch appends your name and email address to the bottom of the commit message (called signing-off a commit) while *-S* signs the commit using your GPG private key.
 
-You can make Git sign all commits and tags by default by running:
+You can make Git sign all commits by default, by running:
 
     git config --global commit.gpgsign true
-    git config --global tag.gpgsign true
 
 ### 3. Cache GPG Passphrase Using GPG Agent
 
