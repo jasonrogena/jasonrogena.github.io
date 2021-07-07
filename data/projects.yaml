@@ -1,0 +1,14 @@
+---
+list:
+  - name: "Lightraft"
+    url: "https://github.com/jasonrogena/lightraft"
+    desc: "Wrapper around SQLite that makes it distributed"
+  - name: "Log Analyse"
+    url: "https://github.com/jasonrogena/log-analyse"
+    desc: "Fast standalone tool to help you make sense of your NGINX access logs"
+  - name: "ma3map"
+    url: "https://github.com/jasonrogena/ma3map-client_android"
+    desc: "Matatu transit app for Nairobi"
+  - name: "Scratch Card Reader"
+    url: "https://github.com/jasonrogena/scratch_card_reader"
+    desc: "Top-up card reader for Android"

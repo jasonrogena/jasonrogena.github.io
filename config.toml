@@ -1,0 +1,53 @@
+baseURL = "https://rogena.me"
+languageCode = "en-us"
+title = "do{coffee; code;} while(true)"
+theme = "cactus"
+copyright = "Jason Rogena"
+
+[[params.social]]
+  name = "github"
+  link = "https://github.com/jasonrogena"
+
+[[params.social]]
+  name = "email"
+  link = "null+blog@rogena.me"
+
+[[params.social]]
+  name = "twitter"
+  link = "https://twitter.com/jrogena"
+
+[params]
+  colortheme = "white"
+  mainSectionTitle = "Posts"
+  showProjectsList = true
+  projectsUrl = "https://github.com/monkeyWzr"
+  rss = true
+  postsOnHomePage = 5
+  tagsOverview = true
+
+[[menu.main]]
+  name = "Home"
+  url = "/"
+  weight = 1
+
+[[menu.main]]
+  name = "All posts"
+  url = "/posts"
+  weight = 2
+
+[[menu.main]]
+  name = "Tags"
+  url = "/tags"
+  weight = 3
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = true
+    style = "monokai"
+    tabWidth = 4

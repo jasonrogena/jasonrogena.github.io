@@ -1,23 +1,21 @@
 do{coffee; code;} while(true)
 ============================
 
-Jason Rogena's personal blog. Hosted by [GitHub Pages](https://pages.github.com/) and generated using [Jekyll](http://jekyllrb.com/)
+[![GitHub Pages](https://github.com/jasonrogena/jasonrogena.github.io/workflows/GitHub%20Pages/badge.svg)](https://github.com/jasonrogena/jasonrogena.github.io/actions?query=workflow%3AGitHub%20Pages)
 
-Jekyll Installation
+Jason Rogena's personal blog. Hosted by [GitHub Pages](https://pages.github.com/) and generated using [Hugo](https://gohugo.io)
+
+Hugo Installation
 -------------------
 
-Run the following commands to install Jekyll
+Run the following commands to install Hugo
 
-    sudo apt-get install ruby
-    gem install jekyll
+    sudo apt-get install hugo
 
 
 Serving the blog
 ----------------
 
-You can serve the blog on you're local machine by running the following commands
+You can serve the blog on you're local machine by running the following commands:
 
-    jekyll serve --watch
-
-
-Make sure you re-generate the HTML for this blog before you push otherwise changes will not reflect 
+    hugo serve --watch
