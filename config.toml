@@ -21,7 +21,7 @@ copyright = "Jason Rogena"
   colortheme = "white"
   mainSectionTitle = "Posts"
   showProjectsList = true
-  projectsUrl = "https://github.com/monkeyWzr"
+  projectsUrl = "https://github.com/jasonrogena"
   rss = true
   postsOnHomePage = 5
   tagsOverview = true
@@ -32,7 +32,7 @@ copyright = "Jason Rogena"
   weight = 1
 
 [[menu.main]]
-  name = "All posts"
+  name = "All Posts"
   url = "/posts"
   weight = 2
 
