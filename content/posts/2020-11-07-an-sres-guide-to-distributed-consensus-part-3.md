@@ -4,7 +4,7 @@ date: 2020-11-07 12:00:00
 tags: [Raft, Distributed Consensus]
 ---
 
-> This is the second of three posts on distributed consensus in the DevOps world. These posts are based on a presentation I gave to the Nairobi GNU/Linux Users Group. A video of the presentation can be found [here](https://www.youtube.com/watch?v=oVmitH0-LUQ&t=181s).
+> This is the last of three posts on distributed consensus in the DevOps world. These posts are based on a presentation I gave to the Nairobi GNU/Linux Users Group. A video of the presentation can be found [here](https://www.youtube.com/watch?v=oVmitH0-LUQ&t=181s).
 
 The first post in this series introduced distributed consensus and the second post introduced the Raft consensus algorithm. In this post, I'll present common DevOps problem and show how we can use distributed consensus to deal with this problem at scale.
 
