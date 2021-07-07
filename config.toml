@@ -17,6 +17,7 @@ copyright = "Jason Rogena"
   link = "https://twitter.com/jrogena"
 
 [params]
+  description = "I am a Site Reliability Engineer currently based in Nairobi. If I'm not on my desk, I'll probably be in the kitchen or gym. I'm also a father of seven (plants). Herein lies, mostly tech-related, exploits in the form of blog posts and projects. Feel free to reach out on email or Twitter if you'd like to chat."
   colortheme = "white"
   mainSectionTitle = "Posts"
   showProjectsList = true
