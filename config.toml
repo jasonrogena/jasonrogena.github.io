@@ -26,6 +26,7 @@ copyright = "Jason Rogena"
   postsOnHomePage = 5
   tagsOverview = true
   showReadTime = true
+  showAllPostsArchive = false
 
 [[menu.main]]
   name = "Home"
