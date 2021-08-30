@@ -1,24 +1,264 @@
-<!doctype html><html lang=en-us><head><link rel=preload href=/lib/font-awesome/webfonts/fa-brands-400.woff2 as=font type=font/woff2 crossorigin=anonymous><link rel=preload href=/lib/font-awesome/webfonts/fa-regular-400.woff2 as=font type=font/woff2 crossorigin=anonymous><link rel=preload href=/lib/font-awesome/webfonts/fa-solid-900.woff2 as=font type=font/woff2 crossorigin=anonymous><link rel=preload href=/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2 as=font type=font/woff2 crossorigin=anonymous><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><title>SSH and Password Managers | do{coffee; code;} while(true)</title><link rel=canonical href=https://rogena.me/posts/2020-01-24-using-password-manager-with-ssh/><meta name=description content="I am a Site Reliability Engineer currently based in Nairobi. If I'm not on my desk, I'll probably be in the kitchen or gym. I'm also a father of seven (plants). Herein lies, mostly tech-related, exploits in the form of blog posts and projects. Feel free to reach out on email or Twitter if you'd like to chat."><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="all,follow"><meta name=googlebot content="index,follow,snippet,archive"><meta property="og:title" content="SSH and Password Managers"><meta property="og:description" content="The ssh program on Linux allows you to specify a program or script from where it should get a passphrase when it needs one. This allows you to, for instance, hookup it up to your password manager to feed it the passphrase. You can do this by specifying the path to the program to execute in the SSH_ASKPASS environment variable.
-I use the pass password manager (which installs the pass command)."><meta property="og:type" content="article"><meta property="og:url" content="https://rogena.me/posts/2020-01-24-using-password-manager-with-ssh/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-01-24T00:00:00+00:00"><meta property="article:modified_time" content="2020-01-24T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="SSH and Password Managers"><meta name=twitter:description content="The ssh program on Linux allows you to specify a program or script from where it should get a passphrase when it needs one. This allows you to, for instance, hookup it up to your password manager to feed it the passphrase. You can do this by specifying the path to the program to execute in the SSH_ASKPASS environment variable.
-I use the pass password manager (which installs the pass command)."><link rel=stylesheet href=https://rogena.me/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="><!--[if lt IE 9]><script src=https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script><script src=https://oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]--><link rel=icon type=image/png href=https://rogena.me/images/favicon.ico></head><body class="max-width mx-auto px3 ltr"><div class="content index py4"><div id=header-post><a id=menu-icon href=#><i class="fas fa-bars fa-lg"></i></a>
+<!doctype html><html lang=en-us>
+<head>
+<link rel=preload href=/lib/font-awesome/webfonts/fa-brands-400.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=/lib/font-awesome/webfonts/fa-regular-400.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=/lib/font-awesome/webfonts/fa-solid-900.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<link rel=preload href=/lib/JetBrainsMono/web/woff2/JetBrainsMono-Regular.woff2 as=font type=font/woff2 crossorigin=anonymous>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<title> SSH and Password Managers | do{coffee; code;} while(true)</title>
+<link rel=canonical href=https://rogena.me/posts/2020-01-24-using-password-manager-with-ssh/>
+<meta name=description content="I am a Site Reliability Engineer currently based in Nairobi. If I'm not on my desk, I'll probably be in the kitchen or gym. I'm also a father of seven (plants). Herein lies, mostly tech-related, exploits in the form of blog posts and projects. Feel free to reach out on email or Twitter if you'd like to chat.">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="all,follow">
+<meta name=googlebot content="index,follow,snippet,archive">
+<meta property="og:title" content="SSH and Password Managers">
+<meta property="og:description" content="The ssh program on Linux allows you to specify a program or script from where it should get a passphrase when it needs one. This allows you to, for instance, hookup it up to your password manager to feed it the passphrase. You can do this by specifying the path to the program to execute in the SSH_ASKPASS environment variable.
+I use the pass password manager (which installs the pass command).">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://rogena.me/posts/2020-01-24-using-password-manager-with-ssh/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2020-01-24T00:00:00+00:00">
+<meta property="article:modified_time" content="2020-01-24T00:00:00+00:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="SSH and Password Managers">
+<meta name=twitter:description content="The ssh program on Linux allows you to specify a program or script from where it should get a passphrase when it needs one. This allows you to, for instance, hookup it up to your password manager to feed it the passphrase. You can do this by specifying the path to the program to execute in the SSH_ASKPASS environment variable.
+I use the pass password manager (which installs the pass command).">
+<link rel=stylesheet href=https://rogena.me/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="><!--[if lt IE 9]><script src=https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script>
+<script src=https://oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]-->
+<link rel=icon type=image/png href=https://rogena.me/images/favicon.ico>
+</head>
+<body class="max-width mx-auto px3 ltr">
+<div class="content index py4">
+<div id=header-post>
+<a id=menu-icon href=#><i class="fas fa-bars fa-lg"></i></a>
 <a id=menu-icon-tablet href=#><i class="fas fa-bars fa-lg"></i></a>
 <a id=top-icon-tablet href=# onclick="$('html, body').animate({scrollTop:0},'fast')" style=display:none aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
-<span id=menu><span id=nav><ul><li><a href=/>Home</a></li><li><a href=/posts>All Posts</a></li><li><a href=/tags>Tags</a></li></ul></span><br><span id=actions><ul><li><a class=icon href=https://rogena.me/posts/2016-09-14-osx-signing-off-git-using-gpg/ aria-label=Previous><i class="fas fa-chevron-left" aria-hidden=true onmouseover="$('#i-prev').toggle()" onmouseout="$('#i-prev').toggle()"></i></a></li><li><a class=icon href=https://rogena.me/posts/2020-11-07-an-sres-guide-to-distributed-consensus-part-1/ aria-label=Next><i class="fas fa-chevron-right" aria-hidden=true onmouseover="$('#i-next').toggle()" onmouseout="$('#i-next').toggle()"></i></a></li><li><a class=icon href=# onclick="$('html, body').animate({scrollTop:0},'fast')" aria-label="Top of Page"><i class="fas fa-chevron-up" aria-hidden=true onmouseover="$('#i-top').toggle()" onmouseout="$('#i-top').toggle()"></i></a></li><li><a class=icon href=# aria-label=Share><i class="fas fa-share-alt" aria-hidden=true onmouseover="$('#i-share').toggle()" onmouseout="$('#i-share').toggle()" onclick="return $('#share').toggle(),!1"></i></a></li></ul><span id=i-prev class=info style=display:none>Previous post</span>
+<span id=menu>
+<span id=nav>
+<ul>
+<li><a href=/>Home</a></li>
+<li><a href=/posts>All Posts</a></li>
+<li><a href=/tags>Tags</a></li>
+</ul>
+</span>
+<br>
+<span id=actions>
+<ul>
+<li>
+<a class=icon href=https://rogena.me/posts/2016-09-14-osx-signing-off-git-using-gpg/ aria-label=Previous>
+<i class="fas fa-chevron-left" aria-hidden=true onmouseover="$('#i-prev').toggle()" onmouseout="$('#i-prev').toggle()"></i>
+</a>
+</li>
+<li>
+<a class=icon href=https://rogena.me/posts/2020-11-07-an-sres-guide-to-distributed-consensus-part-1/ aria-label=Next>
+<i class="fas fa-chevron-right" aria-hidden=true onmouseover="$('#i-next').toggle()" onmouseout="$('#i-next').toggle()"></i>
+</a>
+</li>
+<li>
+<a class=icon href=# onclick="$('html, body').animate({scrollTop:0},'fast')" aria-label="Top of Page">
+<i class="fas fa-chevron-up" aria-hidden=true onmouseover="$('#i-top').toggle()" onmouseout="$('#i-top').toggle()"></i>
+</a>
+</li>
+<li>
+<a class=icon href=# aria-label=Share>
+<i class="fas fa-share-alt" aria-hidden=true onmouseover="$('#i-share').toggle()" onmouseout="$('#i-share').toggle()" onclick="return $('#share').toggle(),!1"></i>
+</a>
+</li>
+</ul>
+<span id=i-prev class=info style=display:none>Previous post</span>
 <span id=i-next class=info style=display:none>Next post</span>
 <span id=i-top class=info style=display:none>Back to top</span>
-<span id=i-share class=info style=display:none>Share post</span></span><br><div id=share style=display:none><ul><li><a class=icon href="http://www.facebook.com/sharer.php?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Facebook><i class="fab fa-facebook" aria-hidden=true></i></a></li><li><a class=icon href="https://twitter.com/share?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&text=SSH%20and%20Password%20Managers" aria-label=Twitter><i class="fab fa-twitter" aria-hidden=true></i></a></li><li><a class=icon href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Linkedin><i class="fab fa-linkedin" aria-hidden=true></i></a></li><li><a class=icon href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&is_video=false&description=SSH%20and%20Password%20Managers" aria-label=Pinterest><i class="fab fa-pinterest" aria-hidden=true></i></a></li><li><a class=icon href="mailto:?subject=SSH%20and%20Password%20Managers&body=Check out this article: https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Email><i class="fas fa-envelope" aria-hidden=true></i></a></li><li><a class=icon href="https://getpocket.com/save?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Pocket><i class="fab fa-get-pocket" aria-hidden=true></i></a></li><li><a class=icon href="http://reddit.com/submit?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=reddit><i class="fab fa-reddit" aria-hidden=true></i></a></li><li><a class=icon href="http://www.tumblr.com/share/link?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&name=SSH%20and%20Password%20Managers&description=The%20ssh%20program%20on%20Linux%20allows%20you%20to%20specify%20a%20program%20or%20script%20from%20where%20it%20should%20get%20a%20passphrase%20when%20it%20needs%20one.%20This%20allows%20you%20to%2c%20for%20instance%2c%20hookup%20it%20up%20to%20your%20password%20manager%20to%20feed%20it%20the%20passphrase.%20You%20can%20do%20this%20by%20specifying%20the%20path%20to%20the%20program%20to%20execute%20in%20the%20SSH_ASKPASS%20environment%20variable.%0aI%20use%20the%20pass%20password%20manager%20%28which%20installs%20the%20pass%20command%29." aria-label=Tumblr><i class="fab fa-tumblr" aria-hidden=true></i></a></li><li><a class=icon href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&t=SSH%20and%20Password%20Managers" aria-label="Hacker News"><i class="fab fa-hacker-news" aria-hidden=true></i></a></li></ul></div><div id=toc><nav id=TableOfContents></nav></div></span></div><article class=post itemscope itemtype=http://schema.org/BlogPosting><header><h1 class=posttitle itemprop="name headline">SSH and Password Managers</h1><div class=meta><div class=postdate><time datetime="2020-01-24 00:00:00 +0000 UTC" itemprop=datePublished>2020-01-24</time></div><div class=article-read-time><i class="far fa-clock"></i>
-2 minute read</div><div class=article-tag><i class="fas fa-tag"></i>
+<span id=i-share class=info style=display:none>Share post</span>
+</span>
+<br>
+<div id=share style=display:none>
+<ul>
+<li>
+<a class=icon href="http://www.facebook.com/sharer.php?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Facebook>
+<i class="fab fa-facebook" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://twitter.com/share?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&text=SSH%20and%20Password%20Managers" aria-label=Twitter>
+<i class="fab fa-twitter" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Linkedin>
+<i class="fab fa-linkedin" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&is_video=false&description=SSH%20and%20Password%20Managers" aria-label=Pinterest>
+<i class="fab fa-pinterest" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="mailto:?subject=SSH%20and%20Password%20Managers&body=Check out this article: https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Email>
+<i class="fas fa-envelope" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://getpocket.com/save?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Pocket>
+<i class="fab fa-get-pocket" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://reddit.com/submit?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=reddit>
+<i class="fab fa-reddit" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.tumblr.com/share/link?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&name=SSH%20and%20Password%20Managers&description=The%20ssh%20program%20on%20Linux%20allows%20you%20to%20specify%20a%20program%20or%20script%20from%20where%20it%20should%20get%20a%20passphrase%20when%20it%20needs%20one.%20This%20allows%20you%20to%2c%20for%20instance%2c%20hookup%20it%20up%20to%20your%20password%20manager%20to%20feed%20it%20the%20passphrase.%20You%20can%20do%20this%20by%20specifying%20the%20path%20to%20the%20program%20to%20execute%20in%20the%20SSH_ASKPASS%20environment%20variable.%0aI%20use%20the%20pass%20password%20manager%20%28which%20installs%20the%20pass%20command%29." aria-label=Tumblr>
+<i class="fab fa-tumblr" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&t=SSH%20and%20Password%20Managers" aria-label="Hacker News">
+<i class="fab fa-hacker-news" aria-hidden=true></i>
+</a>
+</li>
+</ul>
+</div>
+<div id=toc>
+<nav id=TableOfContents></nav>
+</div>
+</span>
+</div>
+<article class=post itemscope itemtype=http://schema.org/BlogPosting>
+<header>
+<h1 class=posttitle itemprop="name headline">
+SSH and Password Managers
+</h1>
+<div class=meta>
+<div class=postdate>
+<time datetime="2020-01-24 00:00:00 +0000 UTC" itemprop=datePublished>2020-01-24</time>
+</div>
+<div class=article-read-time>
+<i class="far fa-clock"></i>
+2 minute read
+</div>
+<div class=article-tag>
+<i class="fas fa-tag"></i>
 <a class=tag-link href=/tags/pass rel=tag>Pass</a>
 ,
-<a class=tag-link href=/tags/ssh rel=tag>SSH</a></div></div></header><div class=content itemprop=articleBody><p>The ssh program on Linux allows you to specify a program or script from where it should get a passphrase when it needs one. This allows you to, for instance, hookup it up to your password manager to feed it the passphrase. You can do this by specifying the path to the program to execute in the <code>SSH_ASKPASS</code> environment variable.</p><p>I use the <a href=https://www.passwordstore.org/>pass</a> password manager (which installs the <code>pass</code> command). Check it out, it&rsquo;s pretty awesome. Here&rsquo;s how to hook up <code>pass</code> to ssh:</p><p>First, create a simple bash script to feed <code>pass</code> the path to the password in my password store that I want it to display (let&rsquo;s say I save it in <code>~/ssh-pass-passphrase.sh</code> and forward the input to it):</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#75715e>#!/bin/bash
+<a class=tag-link href=/tags/ssh rel=tag>SSH</a>
+</div>
+</div>
+</header>
+<div class=content itemprop=articleBody>
+<p>The ssh program on Linux allows you to specify a program or script from where it should get a passphrase when it needs one. This allows you to, for instance, hookup it up to your password manager to feed it the passphrase. You can do this by specifying the path to the program to execute in the <code>SSH_ASKPASS</code> environment variable.</p>
+<p>I use the <a href=https://www.passwordstore.org/>pass</a> password manager (which installs the <code>pass</code> command). Check it out, it&rsquo;s pretty awesome. Here&rsquo;s how to hook up <code>pass</code> to ssh:</p>
+<p>First, create a simple bash script to feed <code>pass</code> the path to the password in my password store that I want it to display (let&rsquo;s say I save it in <code>~/ssh-pass-passphrase.sh</code> and forward the input to it):</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#75715e>#!/bin/bash
 </span><span style=color:#75715e></span>
 read pathToPassphraseWithinPass
 <span style=color:#75715e># Calling pass with the path to the secret will output the secret&#39;s value </span>
 /usr/bin/pass $pathToPassphraseWithinPass
-</code></pre></div><p>Then, make sure your user is the only one allowed to edit the script:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>chmod <span style=color:#ae81ff>0700</span> ~/ssh-pass-passphrase.sh
-</code></pre></div><p>Now set the <code>SSH_ASKPASS</code> environment variable:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>export SSH_ASKPASS<span style=color:#f92672>=</span>~/ssh-pass-passphrase.sh
-</code></pre></div><p>You should now be able to use it with any ssh command that needs a passphrase (e.g <code>ssh-add</code>) like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>echo path/to/passphrase/within/pass | ssh-add ~/.ssh/key-with-passphrase
-</code></pre></div><p>Please note that this will not work if the ssh command is called directly on the terminal (is attached to a terminal). A workaround is to call it after a pipe. In the command above, I&rsquo;ve used the pipe to pass the path to the passphrase in <code>pass</code> to <code>ssh-add</code>. <code>ssh-add</code> will eventually call <code>~/ssh-pass-passphrase.sh</code> and provide the path when <code>read</code> is fired in the script.</p><p>Here&rsquo;s text from the ssh manual detailing what <code>SSH_ASKPASS</code> does:</p><blockquote><p>If ssh needs a passphrase, it will read the passphrase from the current terminal if it was run from a terminal. If ssh does not have a terminal associated with it but DISPLAY and SSH_ASKPASS are set, it will execute the program specified by SSH_ASKPASS and open an X11 window to read the passphrase. This is particularly useful when calling ssh from a .xsession or related script. (Note that on some machines it may be necessary to redirect the input from /dev/null to make this work.)</p></blockquote></div></article><div id=footer-post-container><div id=footer-post><div id=nav-footer style=display:none><ul><li><a href=/>Home</a></li><li><a href=/posts>All Posts</a></li><li><a href=/tags>Tags</a></li></ul></div><div id=toc-footer style=display:none><nav id=TableOfContents></nav></div><div id=share-footer style=display:none><ul><li><a class=icon href="http://www.facebook.com/sharer.php?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Facebook><i class="fab fa-facebook fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="https://twitter.com/share?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&text=SSH%20and%20Password%20Managers" aria-label=Twitter><i class="fab fa-twitter fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Linkedin><i class="fab fa-linkedin fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&is_video=false&description=SSH%20and%20Password%20Managers" aria-label=Pinterest><i class="fab fa-pinterest fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="mailto:?subject=SSH%20and%20Password%20Managers&body=Check out this article: https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Email><i class="fas fa-envelope fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="https://getpocket.com/save?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Pocket><i class="fab fa-get-pocket fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="http://reddit.com/submit?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=reddit><i class="fab fa-reddit fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="http://www.tumblr.com/share/link?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&name=SSH%20and%20Password%20Managers&description=The%20ssh%20program%20on%20Linux%20allows%20you%20to%20specify%20a%20program%20or%20script%20from%20where%20it%20should%20get%20a%20passphrase%20when%20it%20needs%20one.%20This%20allows%20you%20to%2c%20for%20instance%2c%20hookup%20it%20up%20to%20your%20password%20manager%20to%20feed%20it%20the%20passphrase.%20You%20can%20do%20this%20by%20specifying%20the%20path%20to%20the%20program%20to%20execute%20in%20the%20SSH_ASKPASS%20environment%20variable.%0aI%20use%20the%20pass%20password%20manager%20%28which%20installs%20the%20pass%20command%29." aria-label=Tumblr><i class="fab fa-tumblr fa-lg" aria-hidden=true></i></a></li><li><a class=icon href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&t=SSH%20and%20Password%20Managers" aria-label="Hacker News"><i class="fab fa-hacker-news fa-lg" aria-hidden=true></i></a></li></ul></div><div id=actions-footer><a id=menu-toggle class=icon href=# onclick="return $('#nav-footer').toggle(),!1" aria-label=Menu><i class="fas fa-bars fa-lg" aria-hidden=true></i> Menu</a>
-<a id=toc-toggle class=icon href=# onclick="return $('#toc-footer').toggle(),!1" aria-label=TOC><i class="fas fa-list fa-lg" aria-hidden=true></i> TOC</a>
-<a id=share-toggle class=icon href=# onclick="return $('#share-footer').toggle(),!1" aria-label=Share><i class="fas fa-share-alt fa-lg" aria-hidden=true></i> share</a>
-<a id=top style=display:none class=icon href=# onclick="$('html, body').animate({scrollTop:0},'fast')" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg" aria-hidden=true></i> Top</a></div></div></div><footer id=footer><div class=footer-left>Copyright &copy; 2021 Jason Rogena</div><div class=footer-right><nav><ul><li><a href=/>Home</a></li><li><a href=/posts>All Posts</a></li><li><a href=/tags>Tags</a></li></ul></nav></div></footer></div></body><link rel=stylesheet href=/lib/font-awesome/css/all.min.css><script src=/lib/jquery/jquery.min.js></script><script src=/js/main.js></script><script src=/js/code-copy.js></script></html>
+</code></pre></div><p>Then, make sure your user is the only one allowed to edit the script:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>chmod <span style=color:#ae81ff>0700</span> ~/ssh-pass-passphrase.sh
+</code></pre></div><p>Now set the <code>SSH_ASKPASS</code> environment variable:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>export SSH_ASKPASS<span style=color:#f92672>=</span>~/ssh-pass-passphrase.sh
+</code></pre></div><p>You should now be able to use it with any ssh command that needs a passphrase (e.g <code>ssh-add</code>) like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>echo path/to/passphrase/within/pass | ssh-add ~/.ssh/key-with-passphrase
+</code></pre></div><p>Please note that this will not work if the ssh command is called directly on the terminal (is attached to a terminal). A workaround is to call it after a pipe. In the command above, I&rsquo;ve used the pipe to pass the path to the passphrase in <code>pass</code> to <code>ssh-add</code>. <code>ssh-add</code> will eventually call <code>~/ssh-pass-passphrase.sh</code> and provide the path when <code>read</code> is fired in the script.</p>
+<p>Here&rsquo;s text from the ssh manual detailing what <code>SSH_ASKPASS</code> does:</p>
+<blockquote>
+<p>If ssh needs a passphrase, it will read the passphrase from the current terminal if it was run from a terminal. If ssh does not have a terminal associated with it but DISPLAY and SSH_ASKPASS are set, it will execute the program specified by SSH_ASKPASS and open an X11 window to read the passphrase. This is particularly useful when calling ssh from a .xsession or related script. (Note that on some machines it may be necessary to redirect the input from /dev/null to make this work.)</p>
+</blockquote>
+</div>
+</article>
+<div id=footer-post-container>
+<div id=footer-post>
+<div id=nav-footer style=display:none>
+<ul>
+<li><a href=/>Home</a></li>
+<li><a href=/posts>All Posts</a></li>
+<li><a href=/tags>Tags</a></li>
+</ul>
+</div>
+<div id=toc-footer style=display:none>
+<nav id=TableOfContents></nav>
+</div>
+<div id=share-footer style=display:none>
+<ul>
+<li>
+<a class=icon href="http://www.facebook.com/sharer.php?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Facebook>
+<i class="fab fa-facebook fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://twitter.com/share?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&text=SSH%20and%20Password%20Managers" aria-label=Twitter>
+<i class="fab fa-twitter fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Linkedin>
+<i class="fab fa-linkedin fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&is_video=false&description=SSH%20and%20Password%20Managers" aria-label=Pinterest>
+<i class="fab fa-pinterest fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="mailto:?subject=SSH%20and%20Password%20Managers&body=Check out this article: https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f" aria-label=Email>
+<i class="fas fa-envelope fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://getpocket.com/save?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=Pocket>
+<i class="fab fa-get-pocket fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://reddit.com/submit?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&title=SSH%20and%20Password%20Managers" aria-label=reddit>
+<i class="fab fa-reddit fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="http://www.tumblr.com/share/link?url=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&name=SSH%20and%20Password%20Managers&description=The%20ssh%20program%20on%20Linux%20allows%20you%20to%20specify%20a%20program%20or%20script%20from%20where%20it%20should%20get%20a%20passphrase%20when%20it%20needs%20one.%20This%20allows%20you%20to%2c%20for%20instance%2c%20hookup%20it%20up%20to%20your%20password%20manager%20to%20feed%20it%20the%20passphrase.%20You%20can%20do%20this%20by%20specifying%20the%20path%20to%20the%20program%20to%20execute%20in%20the%20SSH_ASKPASS%20environment%20variable.%0aI%20use%20the%20pass%20password%20manager%20%28which%20installs%20the%20pass%20command%29." aria-label=Tumblr>
+<i class="fab fa-tumblr fa-lg" aria-hidden=true></i>
+</a>
+</li>
+<li>
+<a class=icon href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2frogena.me%2fposts%2f2020-01-24-using-password-manager-with-ssh%2f&t=SSH%20and%20Password%20Managers" aria-label="Hacker News">
+<i class="fab fa-hacker-news fa-lg" aria-hidden=true></i>
+</a>
+</li>
+</ul>
+</div>
+<div id=actions-footer>
+<a id=menu-toggle class=icon href=# onclick="return $('#nav-footer').toggle(),!1" aria-label=Menu>
+<i class="fas fa-bars fa-lg" aria-hidden=true></i> Menu</a>
+<a id=toc-toggle class=icon href=# onclick="return $('#toc-footer').toggle(),!1" aria-label=TOC>
+<i class="fas fa-list fa-lg" aria-hidden=true></i> TOC</a>
+<a id=share-toggle class=icon href=# onclick="return $('#share-footer').toggle(),!1" aria-label=Share>
+<i class="fas fa-share-alt fa-lg" aria-hidden=true></i> share</a>
+<a id=top style=display:none class=icon href=# onclick="$('html, body').animate({scrollTop:0},'fast')" aria-label="Top of Page">
+<i class="fas fa-chevron-up fa-lg" aria-hidden=true></i> Top</a>
+</div>
+</div>
+</div>
+<footer id=footer>
+<div class=footer-left>
+Copyright &copy; 2021 Jason Rogena
+</div>
+<div class=footer-right>
+<nav>
+<ul>
+<li><a href=/>Home</a></li>
+<li><a href=/posts>All Posts</a></li>
+<li><a href=/tags>Tags</a></li>
+</ul>
+</nav>
+</div>
+</footer>
+</div>
+</body>
+<link rel=stylesheet href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+<script src=/js/code-copy.js></script>
+</html>
