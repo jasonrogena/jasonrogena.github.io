@@ -6,7 +6,7 @@ tags: [Raft, Distributed Consensus]
 
 > This is the second of three posts on distributed consensus in the DevOps world. These posts are based on a presentation I gave to the Nairobi GNU/Linux Users Group. A video of the presentation can be found [here](https://www.youtube.com/watch?v=oVmitH0-LUQ&t=181s).
 
-The first post in this series introduced distributed consensus. I'll introduce the Raft consensus algorithm in this post and try to explain how it handles distributed consensus.
+The [first post](/posts/2020-11-07-an-sres-guide-to-distributed-consensus-part-1) in this series introduced distributed consensus. I'll introduce the Raft consensus algorithm in this post and try to explain how it handles distributed consensus.
 
 The Raft algorithm is broken down into three parts. The first part is leader election where the nodes in a cluster elect one of them to be their leader. The second part is log replication which handles how commands are gotten from the clients, sent to the nodes in the distributed system, and finally safely applied to their state machines. The third part (called safety) deals with how to handle certain edge cases during leader election and log replication. Don't worry. The role of the leader in Raft will become clear when I explain how log replication works.
 
@@ -56,4 +56,4 @@ Note that the leader will send an AppendEntries request that doesn't have any co
 
 I recommend you watching [this](https://youtu.be/oVmitH0-LUQ?t=1739) section of my presentation for a visual explanation of how log replication works.
 
-In the next post, I'll explain how you can use distributed consensus to handle rolling software updates.
+In the [next post](/posts/2020-11-07-an-sres-guide-to-distributed-consensus-part-3), I'll explain how you can use distributed consensus to handle rolling software updates.

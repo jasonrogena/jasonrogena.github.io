@@ -56,4 +56,4 @@ An important characteristic of state machines is, if you feed the machine a sequ
 
 In the state machine replication approach, consensus is achieved when a majority of the nodes agree on the commands to apply against their individual state machines and in what order these commands should be applied.
 
-In the next post, I will talk about Raft, and how it handles distributed consensus.
+In the [next post](/posts/2020-11-07-an-sres-guide-to-distributed-consensus-part-2), I will talk about Raft, and how it handles distributed consensus.

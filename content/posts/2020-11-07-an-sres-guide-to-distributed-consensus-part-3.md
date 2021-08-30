@@ -6,7 +6,7 @@ tags: [Raft, Distributed Consensus]
 
 > This is the last of three posts on distributed consensus in the DevOps world. These posts are based on a presentation I gave to the Nairobi GNU/Linux Users Group. A video of the presentation can be found [here](https://www.youtube.com/watch?v=oVmitH0-LUQ&t=181s).
 
-The first post in this series introduced distributed consensus and the second post introduced the Raft consensus algorithm. In this post, I'll present common DevOps problem and show how we can use distributed consensus to deal with this problem at scale.
+The [first post](/posts/2020-11-07-an-sres-guide-to-distributed-consensus-part-1) in this series introduced distributed consensus and the [second post](/posts/2020-11-07-an-sres-guide-to-distributed-consensus-part-2) introduced the Raft consensus algorithm. In this post, I'll present common DevOps problem and show how we can use distributed consensus to deal with this problem at scale.
 
 Let's say you need to manage the deployment of software updates to your infrastructure. Some of the requirements that you need to consider include:
 1. The software updates might be large. In some cases larger than 1GB.
