@@ -23,7 +23,7 @@
 <meta name=twitter:title content="Signing Git Commits and Tags Using Your GPG Key">
 <meta name=twitter:description content="I have removed the section on configuring git to auto-sign tags, since the configuration doesn&rsquo;t work. Thanks Hannes Van De Vreken for pointing that out!
  Signing Git commits using GPG isn&rsquo;t a requirement in most projects. It is however a nice to have feature, especially in cases where it is important for you to have your identity as the commiter verified. This prevents, for instance, an impersonator from going undetected when they submit a commit as you.">
-<link rel=stylesheet href=https://rogena.me/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q=="><!--[if lt IE 9]><script src=https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script>
+<link rel=stylesheet href=https://rogena.me/css/styles.94f653e9e151e28067a7c5dbbc4600cbd5a3c721e79faaf971e523c40f3b249b8e4f20bb57810dfffa8d559ca5c140fd56eb4cd9c0853113ad08e66afdb08bdd.css integrity="sha512-lPZT6eFR4oBnp8XbvEYAy9WjxyHnn6r5ceUjxA87JJuOTyC7V4EN//qNVZylwUD9VutM2cCFMROtCOZq/bCL3Q==" crossorigin=anonymous><!--[if lt IE 9]><script src=https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script>
 <script src=https://oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]-->
 <link rel=icon type=image/png href=https://rogena.me/images/favicon.ico>
 </head>
@@ -174,7 +174,7 @@ Signing Git Commits and Tags Using Your GPG Key
 <p>Now you&rsquo;ll need to configure Git to use your GPG private key for signing. First get your key ID by running:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>gpg2 --list-secret-keys|grep sec
 </code></pre></div><p>You should see two output lines; the first showing the path to the file holding the key, and the second the key details (including the key ID&ndash;which is what you want). The format for the second line should be something like:</p>
-<pre><code>sec    [Key Length]/[Key ID] [Date Created and Expiry Date]
+<pre tabindex=0><code>sec    [Key Length]/[Key ID] [Date Created and Expiry Date]
 </code></pre><p>Now add your key ID to Git and tell it to use the gpg2 binary for signing:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>git config --global user.signingkey <span style=color:#f92672>[</span>your key ID<span style=color:#f92672>]</span>
 git config --global gpg.program gpg2
@@ -191,7 +191,7 @@ git config --global gpg.program gpg2
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>default-key <span style=color:#f92672>[</span>your key ID<span style=color:#f92672>]</span>
 use-agent
 </code></pre></div><p>Create a new configuration file <em>~/.gnupg/gpg-agent.conf</em> and add the following lines:</p>
-<pre><code class=language-conf data-lang=conf>use-standard-socket
+<pre tabindex=0><code class=language-conf data-lang=conf>use-standard-socket
 default-cache-ttl 60
 write-env-file /Users/[your user]/.gnupg/gpg-agent-info
 pinentry-program /usr/local/bin/pinentry-mac
