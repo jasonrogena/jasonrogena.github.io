@@ -1,5 +1,8 @@
 ---
 list:
+  - name: "FS Librarian"
+    url: "https://github.com/jasonrogena/librarian"
+    desc: "FS Librarian runs pre-configured commands on files matching configured filters as soon as they are created or updated"
   - name: "Lightraft"
     url: "https://github.com/jasonrogena/lightraft"
     desc: "Wrapper around SQLite that makes it distributed"
