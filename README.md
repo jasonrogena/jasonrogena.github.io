@@ -1,4 +1,4 @@
-do{coffee; code;} while(true)
+Not /.well-known
 ============================
 
 [![GitHub Pages](https://github.com/jasonrogena/jasonrogena.github.io/workflows/GitHub%20Pages/badge.svg)](https://github.com/jasonrogena/jasonrogena.github.io/actions?query=workflow%3AGitHub%20Pages)

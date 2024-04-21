@@ -1,6 +1,6 @@
 baseURL = "https://rogena.me"
 languageCode = "en-us"
-title = "do{coffee; code;} while(true)"
+title = "Not /.well-known"
 theme = "cactus"
 copyright = "Jason Rogena"
 
