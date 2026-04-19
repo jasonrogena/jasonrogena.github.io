@@ -13,8 +13,8 @@ copyright = "Jason Rogena"
   link = "null+blog@rogena.me"
 
 [[params.social]]
-  name = "twitter"
-  link = "https://twitter.com/jrogena"
+  name = "mastodon"
+  link = "https://fosstodon.org/@jrogena"
 
 [params]
   description = "I am a Site Reliability Engineer currently based in Dublin. If I'm not at my desk, I'll probably be in the kitchen or gym. I'm also a father of seven (plants). Herein lies, mostly tech-related, exploits in the form of blog posts and projects. Feel free to reach out through email or Twitter if you'd like to chat."
