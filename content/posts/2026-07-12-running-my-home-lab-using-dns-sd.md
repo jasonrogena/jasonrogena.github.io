@@ -1,7 +1,7 @@
 ---
 title: Running My Home Lab Using DNS-SD
 date: 2026-07-12
-tags: [DNS-SD, DNS, Caddy]
+tags: [DNS-SD, DNS, Caddy, Monitoring]
 ---
 
 > This post has NOT been generated using AI.
