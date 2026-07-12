@@ -1,18 +1,18 @@
 ---
-title: Running my Home Lab Using DNS-SD
+title: Running My Home Lab Using DNS-SD
 date: 2026-07-12
 tags: [DNS-SD, DNS, Caddy]
 ---
 
-> This post has NOT been generated using AI
+> This post has NOT been generated using AI.
 
-Like most of those who I believe would be reading this blog, I run my own home lab. My setup has over the years evolved from an old laptop running just my media centre, only accessible on my home network, to a more elaborate setup with containers running on two hosts on my local network, a third host running local LLMs, and a fourth (thin) host in the cloud running a reverse proxy forwarding requests to services running in the hosts on my local network, allowing me to access some services from anywhere. I like the setup. In essence, it is quite simple; all I have to deal with is a container engine (I use Podman Quadlet) and my reverse proxy, outside the actual services deployed in the lab. I have avoided jumping into the Kubernetes (or similar) bandwagon as I still don't think the overhead is justified as yet.
+Like most of those who I believe would be reading this blog, I run my own home lab. My setup has, over the years, evolved from an old laptop running just my media centre, only accessible on my home network, to a more elaborate setup with containers running on two hosts on my local network, a third host running local LLMs, and a fourth (thin) host in the cloud running a reverse proxy. The reverse proxy forwards requests to services running in the hosts on my local network, allowing me to access some services from anywhere. I like the setup. In essence, it is quite simple; all I have to deal with is a container engine (I use Podman Quadlet) and my reverse proxy, outside the actual services deployed in the lab. I have avoided jumping into the Kubernetes (or similar) bandwagon, as I still don't think the overhead is justified as yet.
 
-It being a home lab means I quite often bring up and take down services. One big pain point for me was having to SSH into my cloud host to update the reverse-proxy configuration every time I'd want to expose or stop exposing a service to the internet. So last year, while in between jobs, I started exploring how I could auto-configure which services to expose to the internet. I was interested in mechanisms that would be agnostic to whatever container engine I use (having moved from systemd-nspawn to Podman and afraid I'd do a similar switch soon after).
+It being a home lab means I quite often bring up and take down services. One big pain point for me was having to SSH into my cloud host to update the reverse-proxy configuration every time I'd want to expose or stop exposing a service to the internet. So last year, while in between jobs, I started exploring how I could auto-configure which services to expose to the internet. I was interested in mechanisms that would be agnostic to whatever container engine I use (having moved from systemd-nspawn to Podman, and afraid I'd do a similar switch soon after).
 
 ## SRV for the Win
 
-DNS was coming out on top for this kind of container engine agnostic mechanism of service discovery. The rough idea was I would configure my reverse proxy to accept requests from any subdomain in a wildcard domain (let's say `*.apps.rogena.me`) and the reverse proxy would extract whatever subdomain was being hit, let's say `home-assistant` in `home-assistant.apps.rogena.me`, and forward the request to a service running inside whatever container IP address either `home-assistant.host1.lan` or `home-assistant.host2.lan` resolves to.
+DNS was coming out on top for this kind of container engine agnostic mechanism of service discovery. The rough idea was I would configure my reverse proxy to accept requests from any subdomain in a wildcard domain (let's say `*.apps.rogena.me`). The reverse proxy would extract whatever subdomain was being hit, let's say `home-assistant` in `home-assistant.apps.rogena.me`, and forward the request to a service running inside whatever container IP address either `home-assistant.host1.lan` or `home-assistant.host2.lan` resolves to.
 
 Two things I had to figure out:
 
@@ -47,11 +47,11 @@ home-assistant._http._tcp.host1.lan. 60 IN SRV 0 77 8123 0.home-assistant.host1.
 ;; MSG SIZE  rcvd: 169
 ```
 
-The above shows an example dig for an SRV record `home-assistant._http._tcp.host1.lan.`. `_http` and `_tcp` in this example encode the service name and protocol. In the answer, `0 77` shows the priority and weight while `8123 0.home-assistant.host1.lan.` shows the port and the A record with the IP address of the container running home-assistant.
+The above shows an example dig for an SRV record `home-assistant._http._tcp.host1.lan.`. `_http` and `_tcp` in this example encode the service name and protocol. In the answer, `0 77` shows the priority and weight, while `8123 0.home-assistant.host1.lan.` shows the port and the A record with the IP address of the container running home-assistant.
 
 Great success! I'm able to discover which container IP and port I should hit to access a service. The reverse proxy can, in theory, run a DNS SRV query for `home-assistant._http._tcp.host1.lan.` and `home-assistant._http._tcp.host2.lan.` when a user tries accessing `https://home-assistant.apps.rogena.me`. In a section below, I explain exactly how I configured Caddy (my reverse proxy).
 
-I couldn't find a container engine agnostic DNS server that exposes SRV records for containers running on hosts, so I wrote [container-dns](https://github.com/jasonrogena/container-dns). container-dns runs inside host1 and host2. With container-dns, all I need to do is to configure an appropriate hostname for the container and add the http port for the service in the container's `/etc/services` file. With `home-assistant._http._tcp.host1.lan.` I set the hostname for the container as `home-assistant` and add a row in `/etc/services` in the container with `http 8123/tcp` (the name of the service and the TCP port the service is running on).
+I couldn't find a container engine agnostic DNS server that exposes SRV records for containers running on hosts, so I wrote [container-dns](https://github.com/jasonrogena/container-dns). container-dns runs inside host1 and host2. With container-dns, all I need to do is to configure an appropriate hostname for the container and add the http port for the service in the container's `/etc/services` file. With `home-assistant._http._tcp.host1.lan.`, I set the hostname for the container as `home-assistant` and add a row in `/etc/services` in the container with `http 8123/tcp` (the name of the service and the TCP port the service is running on).
 
 ## Discovering Extra Service Metadata
 
@@ -140,7 +140,7 @@ home-assistant._http._tcp.host1.lan. 60 IN TXT "domain=home-assistant.apps.rogen
 ;; MSG SIZE  rcvd: 163
 ```
 
-The answer for the TXT record contains several metadata fields: domain, healthz, and okstatus. I can use these to configure how to do uptime monitoring for Home Assistant (i.e. attempt to reach "https://home-assistant.apps.rogena.me/auth/authorize" and check if it returns the HTTP status code 200).
+The answer for the TXT record contains several metadata fields: domain, healthz, and okstatus. I can use these to configure how to do uptime monitoring for Home Assistant (i.e., attempt to reach "https://home-assistant.apps.rogena.me/auth/authorize" and check if it returns the HTTP status code 200).
 
 I extended container-dns to check in each of the containers for the `/etc/container-dns/txt` file and expose the data in that file in the TXT record for the services the container runs. For Home Assistant, this is how the file looks:
 
