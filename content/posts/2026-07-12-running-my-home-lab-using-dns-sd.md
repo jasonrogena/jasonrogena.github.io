@@ -65,7 +65,7 @@ I explored how to auto-discover:
 
 Turns out the SRV record mechanism container-dns supports is part of a larger specification called [DNS-SD](https://www.rfc-editor.org/info/rfc6763/). DNS-SD also specifies how to enumerate which services are deployed under a domain as well as extra metadata for a service. I would use these to auto-discover which services to do uptime monitoring for, as well as how to monitor them.
 
-I'll attempt to explain how I do this using a chain of DNS queries. To discover all services running in host1, you would query a PTR record (`_services._dns-sd._udp` is documented in the DNS-SD spec):
+DNS-SD works using a combination of the PTR, SRV, and TXT record types. A PTR record points a domain name to another domain name, while a TXT record allows you to attach arbitrary text (in most cases key-value pairs) to a domain name. I'll attempt to explain how DNS-SD does service discovery in my setup using a chain of DNS queries. To discover all services running in host1, you would query a PTR record (`_services._dns-sd._udp` is documented in the DNS-SD spec):
 
 ```console
 # dig _services._dns-sd._udp.host1.lan PTR
@@ -88,7 +88,7 @@ _services._dns-sd._udp.host1.lan. 59 IN PTR _ssh._tcp.host1.lan.
 _services._dns-sd._udp.host1.lan. 59 IN PTR _postgresql._tcp.host1.lan.
 ```
 
-Looks like there are `http`, `ssh`, and `postgresql`. For `http`, you can do a PTR query to check which instances expose the service by querying the PTR record:
+Looks like there is `http`, `ssh`, and `postgresql`. For `http`, you can do a PTR query to check which instances expose the service by querying the PTR record:
 
 ```console
 # dig _http._tcp.host1.lan PTR
