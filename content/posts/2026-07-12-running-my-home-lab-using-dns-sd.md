@@ -12,7 +12,7 @@ It being a home lab means I quite often bring up and take down services. One big
 
 ## SRV for the Win
 
-DNS was coming out on top for this kind of container engine agnostic mechanism of service discovery. The rough idea was I would configure my reverse proxy to accept requests from any subdomain in a wildcard domain (let's say `*.apps.rogena.me`). The reverse proxy would extract whatever subdomain was being hit, let's say `home-assistant` in `home-assistant.apps.rogena.me`, and forward the request to a service running inside whatever container IP address either `home-assistant.host1.lan` or `home-assistant.host2.lan` resolves to.
+DNS was coming out on top for this kind of container-engine-agnostic mechanism of service discovery. The rough idea was I would configure my reverse proxy to accept requests from any subdomain in a wildcard domain (let's say `*.apps.rogena.me`). The reverse proxy would extract whatever subdomain was being hit, let's say `home-assistant` in `home-assistant.apps.rogena.me`, and forward the request to a service running inside whatever container IP address either `home-assistant.host1.lan` or `home-assistant.host2.lan` resolves to.
 
 Two things I had to figure out:
 
@@ -51,7 +51,7 @@ The above shows an example dig for an SRV record `home-assistant._http._tcp.host
 
 Great success! I'm able to discover which container IP and port I should hit to access a service. The reverse proxy can, in theory, run a DNS SRV query for `home-assistant._http._tcp.host1.lan.` and `home-assistant._http._tcp.host2.lan.` when a user tries accessing `https://home-assistant.apps.rogena.me`. In a section below, I explain exactly how I configured Caddy (my reverse proxy).
 
-I couldn't find a container engine agnostic DNS server that exposes SRV records for containers running on hosts, so I wrote [container-dns](https://github.com/jasonrogena/container-dns). container-dns runs inside host1 and host2. With container-dns, all I need to do is to configure an appropriate hostname for the container and add the http port for the service in the container's `/etc/services` file. With `home-assistant._http._tcp.host1.lan.`, I set the hostname for the container as `home-assistant` and add a line in `/etc/services` in the container with `http 8123/tcp` (the name of the service and the TCP port the service is running on).
+I couldn't find a container-engine-agnostic DNS server that exposes SRV records for containers running on hosts, so I wrote [container-dns](https://github.com/jasonrogena/container-dns). container-dns runs inside host1 and host2. With container-dns, all I need to do is to configure an appropriate hostname for the container and add the http port for the service in the container's `/etc/services` file. With `home-assistant._http._tcp.host1.lan.`, I set the hostname for the container as `home-assistant` and add a line in `/etc/services` in the container with `http 8123/tcp` (the name of the service and the TCP port the service is running on).
 
 ## Discovering Extra Service Metadata
 

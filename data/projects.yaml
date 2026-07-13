@@ -2,7 +2,7 @@
 list:
   - name: "container-dns"
     url: "https://github.com/jasonrogena/container-dns"
-    desc: "Container engine agnostic DNS server that exposes DNS-SD records for containers running on a host"
+    desc: "Container-engine-agnostic DNS server that exposes DNS-SD records for containers running on a host"
   - name: "upwatch"
     url: "https://github.com/jasonrogena/upwatch"
     desc: "Uptime monitoring service that discovers which services to monitor, and how, using DNS-SD"
