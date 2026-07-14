@@ -51,7 +51,13 @@ The above shows an example dig for an SRV record `home-assistant._http._tcp.host
 
 Great success! I'm able to discover which container IP and port I should hit to access a service. The reverse proxy can, in theory, run a DNS SRV query for `home-assistant._http._tcp.host1.lan.` and `home-assistant._http._tcp.host2.lan.` when a user tries accessing `https://home-assistant.apps.rogena.me`. In a section below, I explain exactly how I configured Caddy (my reverse proxy).
 
-I couldn't find a container-engine-agnostic DNS server that exposes SRV records for containers running on hosts, so I wrote [container-dns](https://github.com/jasonrogena/container-dns). container-dns runs inside host1 and host2. With container-dns, all I need to do is to configure an appropriate hostname for the container and add the http port for the service in the container's `/etc/services` file. With `home-assistant._http._tcp.host1.lan.`, I set the hostname for the container as `home-assistant` and add a line in `/etc/services` in the container with `http 8123/tcp` (the name of the service and the TCP port the service is running on).
+I couldn't find a container-engine-agnostic DNS server that exposes SRV records for containers running on hosts, so I wrote [container-dns](https://github.com/jasonrogena/container-dns). container-dns runs inside host1 and host2. With container-dns, all I need to do is to configure an appropriate hostname for the container and add the http port for the service in the container's `/etc/services` file. With `home-assistant._http._tcp.host1.lan.`, I set the hostname for the container as `home-assistant` and add this line to `/etc/services` in the container:
+
+```
+http 8123/tcp
+```
+
+container-dns only creates an SRV record for a port if that port is in the container's `/etc/services` file. Whatever name the service is given in that file ends up in the SRV record's name (the service name `http` in the /etc/services file matches `_http` in the record `home-assistant._http._tcp.host1.lan.`).
 
 ## Discovering Extra Service Metadata
 
@@ -180,3 +186,5 @@ I use Caddy as my reverse proxy exposing the services I run in my home lab to th
 ```
 
 Caddy calls the DNS resolver on the host it is running on. I have configured the resolver (systemd-resolved) to forward DNS queries for host1 and host2 to the corresponding instance of container-dns.
+
+Notice that Caddy only queries for SRV records with `_http` in them. So a service is only exposed to the internet if its container's `/etc/services` file has an `http` line. Exposing a service (or unexposing it) is now just me adding or removing that one line. No more SSHing into my cloud host to edit the reverse proxy configuration.
