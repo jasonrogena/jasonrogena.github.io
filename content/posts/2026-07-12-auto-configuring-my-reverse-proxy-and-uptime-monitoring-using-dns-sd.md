@@ -165,7 +165,7 @@ I wrote [upwatch](https://github.com/jasonrogena/upwatch), an uptime monitoring 
 I use Caddy as my reverse proxy exposing the services I run in my home lab to the internet. This is how my Caddyfile looks:
 
 
-```
+```console
 *.apps.rogena.me {
     tls {
         dns cloudflare <REDACTED>
