@@ -1,12 +1,12 @@
 ---
-title: Running My Home Lab Using DNS-SD
+title: Auto-configuring My Reverse Proxy and Uptime Monitoring Using DNS-SD
 date: 2026-07-12
 tags: [DNS-SD, DNS, Caddy, Monitoring]
 ---
 
 > This post has NOT been generated using AI.
 
-Like most of those who I believe would be reading this blog, I run my own home lab. My setup has, over the years, evolved from an old laptop running just my media centre, only accessible on my home network. Today, it is a more elaborate setup with containers running on two hosts on my local network, a third host running local LLMs, and a fourth (thin) host in the cloud running a reverse proxy. The reverse proxy forwards requests to services running in the hosts on my local network, allowing me to access some services from anywhere. I like the setup. In essence, it is quite simple. All I have to deal with is a container engine (I use Podman Quadlet) and my reverse proxy, outside the actual services deployed in the lab. I have avoided jumping into the Kubernetes (or similar) bandwagon, as I still don't think the overhead is justified as yet.
+Like most of those who I believe would be reading this post, I run a home lab. It has evolved from a single laptop running a media center into a more elaborate setup with containers spread across two hosts in my local network, a third local host for LLMs, and a thin cloud host running a reverse proxy for exposing select services running on my local network to the internet. Podman Quadlet (for container orchestration) runs in the two local container hosts and Caddy (a reverse proxy) runs in the cloud host. I have avoided Kubernetes, since I still don't think the overhead is justified.
 
 It being a home lab means I quite often bring up and take down services. One big pain point for me was having to SSH into my cloud host to update the reverse proxy configuration every time I'd want to expose or stop exposing a service to the internet. So last year, while in between jobs, I started exploring how I could auto-configure which services to expose to the internet. I was interested in mechanisms that would be agnostic to whatever container engine I use (having moved from systemd-nspawn to Podman, and afraid I'd do a similar switch soon after).
 
