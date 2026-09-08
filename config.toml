@@ -17,7 +17,7 @@ copyright = "Jason Rogena"
   link = "https://fosstodon.org/@jrogena"
 
 [params]
-  description = "I am a Site Reliability Engineer currently based in Dublin. If I'm not at my desk, I'll probably be in the garden or gym. Herein lies, mostly tech-related, exploits in the form of blog posts and projects. Feel free to reach out through email or Twitter if you'd like to chat."
+  description = "I am a Site Reliability Engineer currently based in Dublin. If I'm not at my desk, I'll probably be in the garden or gym. Herein lies, mostly tech-related, exploits in the form of blog posts and projects. Feel free to reach out through email or Mastodon if you'd like to chat."
   colortheme = "white"
   mainSectionTitle = "Posts"
   showProjectsList = true
