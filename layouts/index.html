@@ -74,6 +74,25 @@
     {{ end }}
   </section>
 
+  {{ $showPapersList := false }}
+  {{ if (isset .Site.Params "showpaperslist") }}
+    {{ $showPapersList = .Site.Params.showPapersList }}
+  {{ else if .Site.Data.papers }}
+    {{ $showPapersList = true }}
+  {{ end }}
+  {{ if $showPapersList }}
+  <section id="papers">
+    <span class="h1">Papers</span>
+    <ul class="project-list">
+        {{ range .Site.Data.papers.list }}
+        <li class="project-item">
+          <a href="{{ .url }}">{{ .name }}</a>{{ with .desc }}: {{ . | markdownify }}{{ end }}
+        </li>
+        {{ end }}
+    </ul>
+  </section>
+  {{ end }}
+
   {{ $showProjectsList := false }}
   {{ if (isset .Site.Params "showprojectslist") }}
     {{ $showProjectsList = .Site.Params.showProjectsList }}
