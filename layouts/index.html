@@ -83,10 +83,11 @@
   {{ if $showPapersList }}
   <section id="papers">
     <span class="h1">Papers</span>
-    <ul class="project-list">
+    <ul class="post-list">
         {{ range .Site.Data.papers.list }}
-        <li class="project-item">
-          <a href="{{ .url }}">{{ .name }}</a>{{ with .desc }}: {{ . | markdownify }}{{ end }}
+        <li class="post-item">
+          <div class="meta">{{ .year }}</div>
+          <span><a href="{{ .url }}">{{ .name }}</a>{{ with .desc }}: {{ . | markdownify }}{{ end }}</span>
         </li>
         {{ end }}
     </ul>
