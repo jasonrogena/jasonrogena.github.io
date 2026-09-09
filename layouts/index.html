@@ -87,7 +87,17 @@
         {{ range .Site.Data.papers.list }}
         <li class="post-item">
           <div class="meta">{{ .year }}</div>
-          <span><a href="{{ .url }}">{{ .name }}</a>{{ with .desc }}: {{ . | markdownify }}{{ end }}</span>
+          <span>
+            {{ .name }}
+            {{ if or .local .published }}
+              [
+              {{- if .local }}<a href="{{ .local }}">local copy</a>{{ end -}}
+              {{- if and .local .published }}, {{ end -}}
+              {{- if .published }}<a href="{{ .published }}">published copy</a>{{ end -}}
+              ]
+            {{ end }}
+            {{ with .desc }}: {{ . | markdownify }}{{ end }}
+          </span>
         </li>
         {{ end }}
     </ul>
