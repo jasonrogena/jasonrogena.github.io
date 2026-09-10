@@ -127,17 +127,17 @@
   </section>
   {{ end }}
 
-  {{ $showAwardsList := false }}
-  {{ if (isset .Site.Params "showawardslist") }}
-    {{ $showAwardsList = .Site.Params.showAwardsList }}
-  {{ else if .Site.Data.awards }}
-    {{ $showAwardsList = true }}
+  {{ $showRecognitionList := false }}
+  {{ if (isset .Site.Params "showrecognitionlist") }}
+    {{ $showRecognitionList = .Site.Params.showRecognitionList }}
+  {{ else if .Site.Data.recognition }}
+    {{ $showRecognitionList = true }}
   {{ end }}
-  {{ if $showAwardsList }}
-  <section id="awards">
-    <span class="h1">Awards</span>
+  {{ if $showRecognitionList }}
+  <section id="recognition">
+    <span class="h1">Recognition</span>
     <ul class="post-list">
-        {{ range .Site.Data.awards.list }}
+        {{ range .Site.Data.recognition.list }}
         <li class="post-item">
           <span>
             {{ if .url }}<a href="{{ .url }}">{{ .name }}</a>{{ else }}<strong>{{ .name }}</strong>{{ end }}

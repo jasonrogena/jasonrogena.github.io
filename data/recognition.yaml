@@ -1,0 +1,7 @@
+---
+list:
+  - date: "October 2016"
+    name: "CVE-2016-3917"
+    url: "https://nvd.nist.gov/vuln/detail/cve-2016-3917"
+    issuer: "Android Open Source Project"
+    desc: "For discovering a high-severity security vulnerability in the Android Operating System."
