@@ -9,21 +9,12 @@
   {{ $slug := strings.Trim .RelPermalink "/" }}
   <style>
     .blog-post-comments .comments-frame {
-      display: grid;
       min-height: 600px;
       background: linear-gradient(90deg, #f0f0f0 25%, #e6e6e6 37%, #f0f0f0 63%);
       background-size: 400% 100%;
       animation: comments-loading-pulse 1.4s ease infinite;
     }
-    .blog-post-comments .comments-frame > * {
-      grid-area: 1 / 1;
-    }
-    .blog-post-comments .comments-loading-label {
-      align-self: center;
-      justify-self: center;
-      color: #8c8c8c;
-      font-size: 0.9rem;
-    }
+    .blog-post-comments iframe { display: block; }
     @keyframes comments-loading-pulse {
       0% { background-position: 100% 50%; }
       100% { background-position: 0 50%; }
@@ -31,7 +22,6 @@
   </style>
   <div class="blog-post-comments">
     <div class="comments-frame">
-      <span class="comments-loading-label" aria-hidden="true">Loading comments&hellip;</span>
       <iframe src="{{ .Site.Params.Comments.URL }}/thread/{{ $slug }}" title="Comments" style="width: 100%; border: none;" height="600" loading="lazy"></iframe>
     </div>
   </div>
