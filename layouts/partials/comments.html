@@ -1,0 +1,13 @@
+{{ $enabled := true }}
+{{ if isset .Params "comments" }}
+  {{ $enabled = .Params.comments }}
+{{ else if isset .Site.Params.Comments "enabled" }}
+  {{ $enabled = .Site.Params.Comments.Enabled }}
+{{ end }}
+
+{{ if $enabled }}
+  {{ $slug := strings.Trim .RelPermalink "/" }}
+  <div class="blog-post-comments">
+    <iframe src="{{ .Site.Params.Comments.URL }}/thread/{{ $slug }}" style="width: 100%; border: none;" height="600" loading="lazy"></iframe>
+  </div>
+{{ end }}
