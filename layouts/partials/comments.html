@@ -7,7 +7,22 @@
 
 {{ if $enabled }}
   {{ $slug := strings.Trim .RelPermalink "/" }}
+  <style>
+    .blog-post-comments .comments-frame {
+      min-height: 600px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e6e6e6 37%, #f0f0f0 63%);
+      background-size: 400% 100%;
+      animation: comments-loading-pulse 1.4s ease infinite;
+    }
+    .blog-post-comments iframe { display: block; }
+    @keyframes comments-loading-pulse {
+      0% { background-position: 100% 50%; }
+      100% { background-position: 0 50%; }
+    }
+  </style>
   <div class="blog-post-comments">
-    <iframe src="{{ .Site.Params.Comments.URL }}/thread/{{ $slug }}" style="width: 100%; border: none;" height="600" loading="lazy"></iframe>
+    <div class="comments-frame">
+      <iframe src="{{ .Site.Params.Comments.URL }}/thread/{{ $slug }}" title="Comments" style="width: 100%; border: none;" height="600" loading="lazy"></iframe>
+    </div>
   </div>
 {{ end }}
