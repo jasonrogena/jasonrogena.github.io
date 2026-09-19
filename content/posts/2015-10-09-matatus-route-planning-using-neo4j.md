@@ -19,12 +19,7 @@ My path selection algorithm I constructed is a varient of the classic [Dijkstra'
 
 I collected some stats on how the algorithm performed on my [LG Nexus 5](https://en.wikipedia.org/wiki/Nexus_5). I really wasn't scientific with the data collection. My main reason for collecting the stats is to illustrate how the algorithm scales given an increase in complexity of the path. Generally, and especially with matatu data, the complexity of the path increases with the distance between the start point and the end point. This is because there are more route stops involved and hence more possibilities for switching from one route to another--more edges to traverse. The graph is therefore distance between the the start and end points vs the time taken by the algorithm to calculate the best path. To make it a bit scientific, all the geo-points selected lie in a single road.
 
-{{< rawhtml >}}
-  <div>
-    <a href="https://plot.ly/~jasonrogena/22/" target="_blank" title="Performance in Android App" style="display: block; text-align: center;"><img src="https://plot.ly/~jasonrogena/22.png" alt="Performance in Android App" style="max-width: 100%;width: 936px;"  width="936" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="jasonrogena:22"  src="https://plot.ly/embed.js" async></script>
-  </div>
-{{< /rawhtml >}}
+![Performance in Android App](/images/2015-10-09-matatus-route-planning-using-neo4j_1.png)
 
 You are better off asking around which route to take than waiting 7 minutes for phone to calculate the best path. The performace was terrible, expecially in low end devices. I figured moving the path selection code to a Jersey web service running in a Digital Ocean VPS. My idea was to run the path centrally as the web service with the Android app acting only as a frontend. Sometimes all you need to do is throw a faster CPU and more RAM at your problem. The specifications for the VPS are:
 
@@ -38,12 +33,7 @@ You are better off asking around which route to take than waiting 7 minutes for 
 
 Porting the code was very easy. I was getting identical results from the path selection code running on the Android app and the web service, although much faster in the web service--twenty times faster actually.
 
-{{< rawhtml >}}
-  <div>
-    <a href="https://plot.ly/~jasonrogena/24/" target="_blank" title="Performance in Jersey Web Service" style="display: block; text-align: center;"><img src="https://plot.ly/~jasonrogena/24.png" alt="Performance in Jersey Web Service" style="max-width: 100%;width: 936px;"  width="936" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="jasonrogena:24"  src="https://plot.ly/embed.js" async></script>
-  </div>
-{{< /rawhtml >}}
+![Performance in Jersey Web Service](/images/2015-10-09-matatus-route-planning-using-neo4j_2.png)
 
 From both the Android and Jersey web service graphs, you can tell the algorithm scales really well with path complexity. Past some complexity, the processing time levels out. My focus shifted from scaling on path complexity to scalling to the number of concurrent requests the web service could handle mainly since we were no longer using a distributed processing model.
 
@@ -53,32 +43,17 @@ To test how the web service handled concurrent request, I used a tool called [Si
 siege -b -r1 -c88 "http://api.ma3map.org/get/paths?from=-1.264945,36.721226&to=-1.281226,36.822575"
 ```
 
-{{< rawhtml >}}
-  <div>
-    <a href="https://plot.ly/~jasonrogena/77/" target="_blank" title="Performance With Increasing Concurrent Requests in Jersey Web Service" style="display: block; text-align: center;"><img src="https://plot.ly/~jasonrogena/77.png" alt="Performance With Increasing Concurrent Requests in Jersey Web Service" style="max-width: 100%;width: 1187px;"  width="1187" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="jasonrogena:77"  src="https://plot.ly/embed.js" async></script>
-  </div>
-{{< /rawhtml >}}
+![Performance With Increasing Concurrent Requests in Jersey Web Service](/images/2015-10-09-matatus-route-planning-using-neo4j_3.png)
 
 Up to 4 concurrent requests, the web service handles really well. However, you'll notice that the response time rises at a rate of 7.5 seconds with every extra request. At 5 concurrent requests, the availability drops to 0. It would be really hard to make that work in production, especially due to the fact that requests in my use-case are expected to be in pulses (during rush hours). I had to either improve the algorithm in some way, I still don't know how to, or adopt a different way of calculating the best path.
 
 A colleague of mine introduced me to [Neo4J](https://en.wikipedia.org/wiki/Neo4j) around the same time I was grappling with the problem of scaling the Jersey Webserver. A graph database (such as Neo4J) would work! At the time, I didn't know if it would have been faster but I was willing to try. I created a graph database with the stops as nodes and edges constructed between two nodes if these nodes share routes or are within a 2KM walking distance from each other. Path selection would involve simply querying the database for a path between the starting stop and the destination stop in the graph. It worked and it was fast, much faster than the web service. I installed the Neo4J database in the same VPS running the Jersey web service.
 
-{{< rawhtml >}}
-  <div>
-    <a href="https://plot.ly/~jasonrogena/56/" target="_blank" title="Performance in Neo4J" style="display: block; text-align: center;"><img src="https://plot.ly/~jasonrogena/56.png" alt="Performance in Neo4J" style="max-width: 100%;width: 1187px;"  width="1187" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="jasonrogena:56"  src="https://plot.ly/embed.js" async></script>
-  </div>
-{{< /rawhtml >}}
+![Performance in Neo4J](/images/2015-10-09-matatus-route-planning-using-neo4j_4.png)
 
 It scales well to path complexity, leveling out past some complexity. Did it however scale well to increasing concurrent requests? I performed the same siege test on the Neo4J database and the results were really impressive.
 
-{{< rawhtml >}}
-  <div>
-    <a href="https://plot.ly/~jasonrogena/80/" target="_blank" title="Performance With Increasing Concurrent Requests in Neo4J" style="display: block; text-align: center;"><img src="https://plot.ly/~jasonrogena/80.png" alt="Performance With Increasing Concurrent Requests in Neo4J" style="max-width: 100%;width: 1187px;"  width="1187" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="jasonrogena:80"  src="https://plot.ly/embed.js" async></script>
-  </div>
-{{< /rawhtml >}}
+![Performance With Increasing Concurrent Requests in Neo4J](/images/2015-10-09-matatus-route-planning-using-neo4j_5.png)
 
 The graph maintained 100% availability up to 24 concurrent requests. It however did not dip to 0 at 25. The availability gradually decreased and finally zeroed out at 88 concurrent requests. What's interesting here is that although the availability slowly decreased, the average response time for successfull requests leveled out at 16 seconds. This is awesome.
 
