@@ -15,6 +15,7 @@ copyright = "Jason Rogena"
 [[params.social]]
   name = "mastodon"
   link = "https://fosstodon.org/@jrogena"
+  rel = "noopener me"
 
 [params.comments]
   url = "https://blog-comments.apps.rogena.me"
